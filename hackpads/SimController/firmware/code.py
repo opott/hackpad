@@ -1,22 +1,30 @@
-print("Starting")
-
+# Main Keyboard Configuration - v1.0.0
 import board
+import pog
+# check if we just want to run the coord_mappping Assistant
+if pog.coordMappingAssistant:
+    from coordmaphelper import CoordMapKeyboard
+    if __name__ == '__main__':
+        CoordMapKeyboard().go()
+    print("Exiting Coord Mapping Assistant Because of an error")
+else:
+    from kb import POGKeyboard
+    # set the required features for you keyboard and keymap
+    # add custom ones in the kb.py
 
-from kmk.kmk_keyboard import KMKKeyboard
-from kmk.keys import KC
-from kmk.scanners import DiodeOrientation
+    keyboard = POGKeyboard(features=pog.kbFeatures)
 
-keyboard = KMKKeyboard()
+    # manage settings for our modules and extensions here
+    keyboard.tapdance.tap_time = 200
 
-keyboard.col_pins = (board.GP1, board.GP2, board.GP3, board.GP4, board.GP5)
-keyboard.row_pins = (board.GP10, board.GP9, board.GP8)
-keyboard.diode_orientation = DiodeOrientation.ROW2COL
+    # Keymap
+    import keymap
+    keyboard.keymap = keymap.keymap
 
-keyboard.keymap = [
-    [KC.F13, KC.F14, KC.F15, KC.F16, KC.KP_1, ],
-    [KC.F17, KC.F18, KC.F19, KC.F20, KC.KP_2, ],
-    [KC.F21, KC.F22, KC.F23, KC.F24, KC.KP_3, ]
-]
+    # Encoder Keymap if available
+    if pog.hasEncoders:
+        keyboard.encoder_handler.map = keymap.encoderKeymap
 
-if __name__ == '__main__':
-    keyboard.go()
+    # Execute the keyboard loop
+    if __name__ == '__main__':
+        keyboard.go()
